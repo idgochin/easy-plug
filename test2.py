@@ -4,15 +4,12 @@ from pymodbus.exceptions import ModbusIOException
 # Configure the Modbus client for the USB to TTL connection
 client = ModbusSerialClient(port='/dev/ttyUSB0', baudrate=9600, timeout=1, stopbits=1, bytesize=8, parity='N')
 
-# Specify the Modbus unit ID (slave address)
-UNIT_ID = 2
-
 # Function to read and parse all data
 def read_pzem_data():
     if client.connect():
         try:
             # Read multiple registers starting from 0x0000 (10 registers for all data)
-            result = client.read_input_registers(0x0000, 10, slave=UNIT_ID)
+            result = client.read_input_registers(address=0x0000, count=10, slave=1)
             
             if isinstance(result, ModbusIOException) or result.isError():
                 print(f"Failed to read from the device, result: {result}")
@@ -41,7 +38,7 @@ def read_pzem_data():
                 alarm_status = result.registers[9]
                 
                 # Print all values
-                print("pzem2")
+                print("PZEM Data")
                 print(f"Voltage: {voltage} V")
                 print(f"Current: {current} A")
                 print(f"Power: {power} W")

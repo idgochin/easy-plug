@@ -4,7 +4,7 @@ import time
 from RPLCD.i2c import CharLCD
 
 # Define LCD parameters
-lcd = CharLCD(i2c_expander='PCF8574', address=0x27, port=1, cols=16, rows=2, charmap='A02')
+lcd = CharLCD(i2c_expander='PCF8574', address=0x26, port=1, cols=16, rows=2, charmap='A02')
 
 # Configure the Modbus client for the USB to TTL connection
 client = ModbusSerialClient(port='/dev/ttyUSB0', baudrate=9600, timeout=1, stopbits=1, bytesize=8, parity='N')
@@ -21,7 +21,8 @@ def read_pzem_data():
     if client.connect():
         try:
             # Read multiple registers starting from 0x0000 (10 registers for all data)
-            result = client.read_input_registers(0x0000, 10, slave=UNIT_ID)
+            # result = client.read_input_registers(0x0000, 10, slave=UNIT_ID)
+            result = client.read_input_registers(address=0x0000, count=10, slave=UNIT_ID)
             
             if isinstance(result, ModbusIOException) or result.isError():
                 print(f"Failed to read from the device, result: {result}")
