@@ -5,8 +5,13 @@ from io import BytesIO
 import sys
 import time
 
-# URL of the image in Google Cloud Storage
-image_url = "https://storage.googleapis.com/easy-plug-qr/qrcode/EZP000101.png"
+# Read the parameter (e.g., EZP000101 or EZP000102)
+if len(sys.argv) != 2:
+    print("Usage: python3 display-pay.py <parameter>")
+    sys.exit(1)
+
+parameter = sys.argv[1]
+image_url = f"https://storage.googleapis.com/easy-plug-qr/qrcode/{parameter}.png"
 
 # Function to fetch and display the image
 def fetch_and_display_image():

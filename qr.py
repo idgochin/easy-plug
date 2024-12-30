@@ -2,6 +2,7 @@ import qrcode
 from tkinter import Tk, Label, Frame
 from PIL import Image, ImageTk
 import argparse
+import sys
 
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description="Generate and display a QR code.")
@@ -51,7 +52,11 @@ qr_label = Label(frame, image=qr_image)
 qr_label.pack(side="left")
 
 # Bind Escape key to exit the window
-root.bind("<Escape>", lambda e: root.destroy())
+# root.bind("<Escape>", lambda e: root.destroy())
+root.bind("<Escape>", lambda e: sys.exit())
+
+# Schedule the program to exit after 10 minutes (600,000 milliseconds)
+root.after(60000, lambda: sys.exit())
 
 # Run the tkinter main loop
 root.mainloop()

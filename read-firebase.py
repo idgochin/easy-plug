@@ -3,6 +3,7 @@ from firebase_admin import credentials
 from firebase_admin import db
 import subprocess
 import time
+import icecream as ic
 
 # Path to your service account key
 service_account_key_path = "firebase/serviceAccountKey.json"
@@ -21,7 +22,8 @@ def monitor_plugs():
     try:
         while True:
             data = ref.get()
-            print("Data from Realtime Database:", data)
+            # print("Data from Realtime Database:", data)
+            ic(data)
 
             if data:
                 # Check EZP000101 status
