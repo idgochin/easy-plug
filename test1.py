@@ -77,4 +77,5 @@ lcd.cursor_pos = (0, 0)
 lcd.write_string(f"Voltage: {voltage} V")
 lcd.cursor_pos = (1, 0)
 lcd.write_string(f"Energy: {energy} Wh")
-# time.sleep(5)
+time.sleep(5)
+lcd.backlight_enabled = False
