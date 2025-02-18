@@ -1,28 +1,39 @@
-import tkinter as tk
-from PIL import Image, ImageTk
-import requests
-from io import BytesIO
-import sys
+import os
+import io
 import time
+import sys
+import tkinter as tk
+from google.cloud import storage
+from PIL import Image, ImageTk
 
-# URL of the image in Google Cloud Storage
-image_url = "https://storage.googleapis.com/easy-plug-qr/qrcode/EZP000101.png"
+# Set Google Cloud credentials
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "easy-plug-store-94fa3306c1c6.json"
 
-# Function to fetch and display the image
+# Initialize Google Cloud Storage Client
+client = storage.Client()
+
+# Define bucket and image path
+BUCKET_NAME = "easy-plug-qr"
+IMAGE_PATH = "qrcode/EZP000101.png"
+
+def download_image_from_gcs(bucket_name, image_path):
+    """Download image from Google Cloud Storage into memory."""
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(image_path)
+    return blob.download_as_bytes()
+
 def fetch_and_display_image():
-    start_time = time.time()  # Record the start time
-    retry_interval = 5  # Retry every 5 seconds
-    timeout = 5 * 60  # Maximum wait time: 5 minutes
+    """Fetch, resize, and display an image from Google Cloud Storage."""
+    timeout = 10  # Maximum wait time in seconds
+    retry_interval = 2  # Wait time between retries
+    start_time = time.time()
 
     while True:
         try:
-            # Fetch the image from the URL
-            response = requests.get(image_url)
-            response.raise_for_status()  # Raise an error for bad status codes
-            image_data = BytesIO(response.content)
+            image_bytes = download_image_from_gcs(BUCKET_NAME, IMAGE_PATH)
 
-            # Open the image using Pillow
-            pil_image = Image.open(image_data)
+            # Convert bytes to PIL Image
+            pil_image = Image.open(io.BytesIO(image_bytes))
 
             # Calculate new dimensions (230% of original)
             original_width, original_height = pil_image.size
@@ -39,9 +50,10 @@ def fetch_and_display_image():
             label = tk.Label(root, image=tk_image, bg="black")
             label.image = tk_image  # Keep a reference to avoid garbage collection
             label.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
             return  # Exit the loop if successful
 
-        except requests.exceptions.RequestException as e:
+        except Exception as e:
             elapsed_time = time.time() - start_time
             print(f"Error fetching the image: {e}")
             if elapsed_time > timeout:

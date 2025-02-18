@@ -20,7 +20,7 @@ firebase_admin.initialize_app(cred, {
 ref = db.reference('plugs')
 
 # Balance file path
-BALANCE_FILE_PATH = "balance.json"
+BALANCE_FILE_PATH = "balance-plug1.json"
 
 # Function to read balance from the JSON file
 def read_balance_from_file():
@@ -68,9 +68,9 @@ def monitor_plugs():
                     if inactive_start_time is None:
                         inactive_start_time = time.time()
                         print(inactive_start_time)
-                    elif time.time() - inactive_start_time > 300:  # 300 seconds = 5 minutes
+                    elif time.time() - inactive_start_time > 600:  # 300 seconds = 5 minutes
                         print(inactive_start_time)
-                        print("Plug1 has been inactive for 5 minutes. Ending script.")
+                        print("Plug1 has been inactive for 10 minutes. Ending script.")
                         return
                     print(time.time() - inactive_start_time)
             time.sleep(5)
