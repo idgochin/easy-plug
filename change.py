@@ -45,7 +45,7 @@ def main():
     
     try:
         # Change the address of the PZEM to a new address, e.g., 5
-        change_pzem_address(serial_port, new_address=2)
+        change_pzem_address(serial_port, new_address=3)
         print("Address change successful.")
         
     except Exception as e:

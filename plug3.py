@@ -14,8 +14,8 @@ import threading
 
 # Pin Definitions
 # LED1_PIN = 6    # LED 1 connected to GPIO 6
-RELAY1_PIN = 16 # Relay 1 connected to GPIO 16
-BUTTON1_PIN = 18  # Emergency stop button (same as main script)
+RELAY1_PIN = 20 # Relay 1 connected to GPIO 12
+BUTTON1_PIN = 22  # Emergency stop button (same as main script)
 
 # GPIO setup
 GPIO.setmode(GPIO.BCM)
@@ -41,7 +41,7 @@ firebase_admin.initialize_app(cred, {
 ref = db.reference('plugs')
 
 # Define LCD parameters
-lcd = CharLCD(i2c_expander='PCF8574', address=0x26, port=1, cols=16, rows=2, charmap='A02')
+lcd = CharLCD(i2c_expander='PCF8574', address=0x25, port=1, cols=16, rows=2, charmap='A02')
 
 # Configure the Modbus client for the USB to TTL connection
 client = ModbusSerialClient(port='/dev/ttyUSB0', baudrate=9600, timeout=1, stopbits=1, bytesize=8, parity='N')
@@ -50,10 +50,11 @@ client = ModbusSerialClient(port='/dev/ttyUSB0', baudrate=9600, timeout=1, stopb
 BALANCE_FILES = {
     "EZP000101": "balance-plug1.json",
     "EZP000102": "balance-plug2.json",
+    "EZP000103": "balance-plug3.json",
 }
 
 # Specify the Modbus unit ID (slave address)
-UNIT_ID = 2
+UNIT_ID = 3
 
 voltage = 0
 energy = 0
@@ -96,7 +97,7 @@ def monitor_emergency_button():
             current_time = time.time()
             # Debounce: ignore if pressed within 0.5 seconds
             if current_time - last_button_time > 0.5:
-                print("EMERGENCY STOP: Button 2 pressed!")
+                print("EMERGENCY STOP: Button 3 pressed!")
                 emergency_stop = True
                 last_button_time = current_time
                 break
@@ -104,7 +105,7 @@ def monitor_emergency_button():
 
 # Function to read balance from the JSON file
 def read_balance_from_file(plug_id):
-    file_path = BALANCE_FILES.get(plug_id, "balance-plug2.json")
+    file_path = BALANCE_FILES.get(plug_id, "balance-plug3.json")
     try:
         with open(file_path, "r") as file:
             data = json.load(file)
@@ -115,7 +116,7 @@ def read_balance_from_file(plug_id):
 
 # Function to write balance to the JSON file
 def write_balance_to_file(plug_id, total_price):
-    file_path = BALANCE_FILES.get(plug_id, "balance-plug2.json")
+    file_path = BALANCE_FILES.get(plug_id, "balance-plug3.json")
     if os.path.exists(file_path):
         with open(file_path, "r") as file:
             try:
@@ -166,7 +167,7 @@ def safe_shutdown(plug_id, reason):
     
     print(f"Hardware safely turned off due to: {reason}")
     
-    pay_plug("pay-plug2.py") 
+    pay_plug("pay-plug3.py") 
     
     # IMPORTANT: Reset Firebase status to 'inactive' to prevent auto-restart
     try:
@@ -189,11 +190,11 @@ def safe_shutdown(plug_id, reason):
     
     # Call inactive script to reset the system
     try:
-        show_screen_text(f"PLUG 2\nSTOP")
-        subprocess.Popen(["python3", "inactive-plug2.py"])
-        print("inactive-plug2.py started successfully")
+        show_screen_text(f"PLUG 3\nSTOP")
+        subprocess.Popen(["python3", "inactive-plug3.py"])
+        print("inactive-plug3.py started successfully")
     except Exception as e:
-        print(f"Error starting inactive-plug2.py: {e}")
+        print(f"Error starting inactive-plug3.py: {e}")
         
      # Call pay
     # try:
@@ -217,7 +218,7 @@ def monitor_plugs():
     
     try:
         start_blackdisplay_script("display35-auto-exit.py")
-        plug_id = "EZP000102"
+        plug_id = "EZP000103"
         remain_time = balance_to_time(read_balance_from_file(plug_id))
         
         # Start emergency button monitoring in separate thread
@@ -336,7 +337,7 @@ if __name__ == "__main__":
         monitor_plugs()
     except KeyboardInterrupt:
         print("Keyboard interrupt - shutting down")
-        safe_shutdown("EZP000102", "Manual Stop")
+        safe_shutdown("EZP000103", "Manual Stop")
     finally:
         # Final cleanup
         # GPIO.output(LED1_PIN, GPIO.LOW)

@@ -4,13 +4,13 @@ import time
 from RPLCD.i2c import CharLCD
 
 # Define LCD parameters
-lcd = CharLCD(i2c_expander='PCF8574', address=0x26, port=1, cols=16, rows=2, charmap='A02')
+lcd = CharLCD(i2c_expander='PCF8574', address=0x23, port=1, cols=16, rows=2, charmap='A02')
 
 # Configure the Modbus client for the USB to TTL connection
 client = ModbusSerialClient(port='/dev/ttyUSB0', baudrate=9600, timeout=1, stopbits=1, bytesize=8, parity='N')
 
 # Specify the Modbus unit ID (slave address)
-UNIT_ID = 1
+UNIT_ID = 4
 
 voltage = 0
 energy = 0

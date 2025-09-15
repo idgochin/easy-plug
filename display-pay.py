@@ -68,6 +68,7 @@ root.title("Zoomed Image Display")
 # Set fullscreen mode
 root.attributes('-fullscreen', True)
 root.configure(bg="black")
+root.attributes('-topmost', True)
 
 # Exit fullscreen with the Escape key
 root.bind("<Escape>", lambda e: root.destroy())

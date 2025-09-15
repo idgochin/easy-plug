@@ -1,1 +1,7 @@
-{"balance": 0.0}
+{
+    "balance": 0.0,
+    "customer": "",
+    "plugId": "EZP000101",
+    "total_price": 0.0,
+    "plug_status": "inactive"
+}
